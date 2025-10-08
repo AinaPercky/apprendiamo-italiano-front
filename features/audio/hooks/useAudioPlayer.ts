@@ -4,11 +4,12 @@ import { useState, useCallback } from 'react';
 
 /**
  * @file Hook personnalisé pour gérer la logique du lecteur audio.
- * Gère l'état de lecture (play/pause) et de boucle pour plusieurs éléments audio.
+ * Gère l'état de lecture (play/pause), de boucle et de vitesse pour plusieurs éléments audio.
  */
 export const useAudioPlayer = () => {
     const [playingAudioId, setPlayingAudioId] = useState<number | null>(null);
     const [loopingAudioId, setLoopingAudioId] = useState<number | null>(null);
+    const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
 
     /**
      * Obtient l'élément audio HTML par son ID.
@@ -36,6 +37,7 @@ export const useAudioPlayer = () => {
             
             setPlayingAudioId(id);
             audio.currentTime = 0;
+            audio.playbackRate = playbackSpeed; // Applique la vitesse de lecture
             audio.play().catch(e => console.error("Erreur de lecture audio:", e));
             
             // Écouteur pour réinitialiser l'état si l'audio est mis en pause par l'utilisateur ou se termine.
@@ -45,7 +47,7 @@ export const useAudioPlayer = () => {
                 }
             };
         }
-    }, [playingAudioId]);
+    }, [playingAudioId, playbackSpeed]);
 
     /**
      * Active/désactive la lecture en boucle pour un fichier audio.
@@ -70,10 +72,28 @@ export const useAudioPlayer = () => {
         }
     }, [loopingAudioId]);
 
+    /**
+     * Change la vitesse de lecture pour l'audio en cours.
+     * @param speed - La nouvelle vitesse (0.5 à 2.0)
+     */
+    const changeSpeed = useCallback((speed: number) => {
+        setPlaybackSpeed(speed);
+        
+        // Si un audio est en cours de lecture, applique immédiatement la nouvelle vitesse
+        if (playingAudioId !== null) {
+            const audio = getAudioElement(playingAudioId);
+            if (audio) {
+                audio.playbackRate = speed;
+            }
+        }
+    }, [playingAudioId]);
+
     return {
         playingAudioId,
         loopingAudioId,
+        playbackSpeed,
         playAudio,
         toggleLoop,
+        changeSpeed,
     };
 };
