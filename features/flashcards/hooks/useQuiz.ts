@@ -101,16 +101,16 @@ export const useQuiz = (cards: Card[], quizType: 'typing' | 'matching' | 'multip
             setScore(prev => ({ ...prev, correct: prev.correct + 1 }));
         }
 
+        if (!isCorrect && quizType === 'until-perfect') {
+            setErrors(prev => [...prev, currentCard]);
+        }
+
         setShowAnswer(true);
 
         setTimeout(() => {
             let nextIndex = currentIndex + 1;
             const currentListLength = quizType === 'until-perfect' ? pendingCards.length : quizCards.length;
             const isEndOfRound = nextIndex >= currentListLength;
-
-            if (!isCorrect && quizType === 'until-perfect') {
-                setErrors(prev => [...prev, currentCard]);
-            }
 
             if (!isEndOfRound) {
                 setCurrentIndex(nextIndex);
