@@ -24,6 +24,8 @@ const SPEED_OPTIONS = [
     { value: 0.65, label: '0.65x' },
     { value: 0.7, label: '0.7x' },
     { value: 0.75, label: '0.75x' },
+    { value: 0.75, label: '0.85x' },
+    { value: 0.75, label: '0.9x' },
     { value: 1, label: '1x' },
     { value: 1.25, label: '1.25x' },
     { value: 1.5, label: '1.5x' },
