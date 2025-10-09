@@ -5,17 +5,16 @@ import type { Deck } from '../../../types';
 import { useCards } from '../hooks/useCards';
 import { useQuiz } from '../hooks/useQuiz';
 import { Loader2, ArrowLeft, RefreshCw, CheckCircle, XCircle, Shuffle } from 'lucide-react';
-// Fix: Import normalizeText to be used for comparing answers.
 import { normalizeText } from '../../../utils/textUtils';
 
 /**
- * @file Affiche l'interface du quiz, que ce soit en mode "typing" ou "matching".
+ * @file Affiche l'interface du quiz, que ce soit en mode "typing", "matching", "multiple-choice" ou "until-perfect".
  * Utilise le `useQuiz` hook pour gérer la logique complexe du jeu.
  */
 
 interface QuizViewProps {
     deck: Deck;
-    quizType: 'typing' | 'matching';
+    quizType: 'typing' | 'matching' | 'multiple-choice' | 'until-perfect';
     onReturnToCards: () => void;
 }
 
@@ -25,12 +24,14 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
         score,
         isComplete,
         currentCard,
-        userAnswer,
-        setUserAnswer,
+        userInput,
+        setUserInput,
         showAnswer,
         checkAnswer,
         quizCards,
-        currentCardIndex,
+        pendingCards,
+        currentIndex,
+        options,
         leftItems,
         rightItems,
         matchedPairs,
@@ -97,13 +98,21 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
         );
     }
     
-    // Quiz "Typing"
+    // Quiz "Typing", "Multiple-Choice" ou "Until-Perfect"
     if (!currentCard) return null;
+
+    const isTypingOrUntil = quizType === 'typing' || quizType === 'until-perfect';
+    const isMultipleChoice = quizType === 'multiple-choice';
+
+    const progressLabel = quizType === 'until-perfect' 
+        ? `Progression ronde: ${currentIndex + 1} / ${pendingCards.length} (Maîtrisées: ${score.correct}/${score.total})`
+        : `${currentIndex + 1} / ${quizType === 'until-perfect' ? pendingCards.length : quizCards.length}`;
+
     return (
         <div className="max-w-2xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <button onClick={onReturnToCards} className="text-olive hover:text-olive-dark"><ArrowLeft size={20} /></button>
-                <div className="text-lg font-semibold text-gray-700">{currentCardIndex + 1} / {quizCards.length}</div>
+                <div className="text-lg font-semibold text-gray-700">{progressLabel}</div>
                 <div className="text-lg font-semibold text-italian-green">Score: {score.correct}/{score.total}</div>
             </div>
             <div className="bg-italian-white rounded-lg shadow-lg p-8">
@@ -112,10 +121,33 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
                     <h2 className="text-3xl font-bold font-serif text-charcoal mb-2">{currentCard.front}</h2>
                     {currentCard.pronunciation && <p className="text-olive">{currentCard.pronunciation}</p>}
                 </div>
-                 <div className="space-y-4">
-                    <div className="flex flex-col items-center">
-                        <input type="text" value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} placeholder="Votre réponse en italien..." className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg text-center text-lg focus:ring-2 focus:ring-olive focus:border-transparent" onKeyPress={(e) => e.key === 'Enter' && !showAnswer && checkAnswer()} disabled={showAnswer} />
-                    </div>
+                <div className="space-y-4">
+                    {isTypingOrUntil ? (
+                        <div className="flex flex-col items-center">
+                            <input 
+                                type="text" 
+                                value={userInput} 
+                                onChange={(e) => setUserInput(e.target.value)} 
+                                placeholder="Votre réponse en italien..." 
+                                className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg text-center text-lg focus:ring-2 focus:ring-olive focus:border-transparent" 
+                                onKeyPress={(e) => e.key === 'Enter' && !showAnswer && checkAnswer()} 
+                                disabled={showAnswer} 
+                            />
+                        </div>
+                    ) : isMultipleChoice ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {options.map((opt, idx) => (
+                                <button 
+                                    key={idx} 
+                                    onClick={() => !showAnswer && setUserInput(opt)} 
+                                    className={`p-4 rounded-lg border-2 text-center transition-all cursor-pointer ${userInput === opt ? 'bg-olive/20 border-olive text-charcoal' : 'border-gray-300 text-charcoal'} ${showAnswer ? (normalizeText(opt) === normalizeText(currentCard.back) ? 'bg-green-100 border-italian-green text-green-800' : (userInput === opt ? 'bg-red-100 border-terracotta text-red-800' : '')) : 'hover:bg-gray-50'}`} 
+                                    disabled={showAnswer}
+                                >
+                                    {opt}
+                                </button>
+                            ))}
+                        </div>
+                    ) : null}
                     {currentCard.back.split(' ').length > 2 && (
                         <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                             <p className="text-sm text-gray-600 mb-2 flex items-center gap-2"><Shuffle size={14} /> Indice:</p>
@@ -127,13 +159,13 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
                     {showAnswer ? (
                         <div className="text-center space-y-2">
                             <div className="text-xl font-semibold text-charcoal">Réponse: {currentCard.back}</div>
-                             <div className={`text-lg font-bold flex items-center justify-center gap-2 ${normalizeText(userAnswer) === normalizeText(currentCard.back) ? 'text-italian-green' : 'text-terracotta'}`}>
-                                {normalizeText(userAnswer) === normalizeText(currentCard.back) ? <><CheckCircle size={20}/> Correct !</> : <><XCircle size={20}/> Incorrect</>}
+                            <div className={`text-lg font-bold flex items-center justify-center gap-2 ${normalizeText(userInput) === normalizeText(currentCard.back) ? 'text-italian-green' : 'text-terracotta'}`}>
+                                {normalizeText(userInput) === normalizeText(currentCard.back) ? <><CheckCircle size={20}/> Correct !</> : <><XCircle size={20}/> Incorrect</>}
                             </div>
                         </div>
                     ) : (
                         <div className="text-center">
-                            <button onClick={checkAnswer} className="bg-italian-green hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg" disabled={!userAnswer.trim()}>Vérifier</button>
+                            <button onClick={checkAnswer} className="bg-italian-green hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg" disabled={!userInput.trim()}>Vérifier</button>
                         </div>
                     )}
                 </div>

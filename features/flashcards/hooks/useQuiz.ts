@@ -6,20 +6,22 @@ import { normalizeText } from '../../../utils/textUtils';
 
 /**
  * @file Hook personnalisé pour encapsuler toute la logique d'un quiz de flashcards.
- * Gère les modes "typing" et "matching", le score, la progression et l'état de complétion.
+ * Gère les modes "typing", "matching", "multiple-choice" et "until-perfect", le score, la progression et l'état de complétion.
  * @param cards - La liste des cartes à utiliser pour le quiz.
- * @param quizType - Le type de quiz : 'typing' ou 'matching'.
+ * @param quizType - Le type de quiz : 'typing', 'matching', 'multiple-choice' ou 'until-perfect'.
  */
-export const useQuiz = (cards: Card[], quizType: 'typing' | 'matching') => {
+export const useQuiz = (cards: Card[], quizType: 'typing' | 'matching' | 'multiple-choice' | 'until-perfect') => {
     // État général du quiz
     const [score, setScore] = useState({ correct: 0, total: 0 });
     const [isComplete, setIsComplete] = useState(false);
 
-    // État spécifique au quiz "typing"
+    // État partagé pour les quiz basés sur des cartes individuelles (typing, multiple-choice, until-perfect)
     const [quizCards, setQuizCards] = useState<Card[]>([]);
-    const [currentCardIndex, setCurrentCardIndex] = useState(0);
-    const [userAnswer, setUserAnswer] = useState('');
+    const [pendingCards, setPendingCards] = useState<Card[]>([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [userInput, setUserInput] = useState('');
     const [showAnswer, setShowAnswer] = useState(false);
+    const [errors, setErrors] = useState<Card[]>([]);
 
     // État spécifique au quiz "matching"
     const [leftItems, setLeftItems] = useState<MatchingItem[]>([]);
@@ -38,12 +40,19 @@ export const useQuiz = (cards: Card[], quizType: 'typing' | 'matching') => {
         setIsComplete(false);
         const shuffled = [...cards].sort(() => Math.random() - 0.5);
 
-        if (quizType === 'typing') {
+        if (quizType === 'typing' || quizType === 'multiple-choice') {
             setQuizCards(shuffled);
-            setCurrentCardIndex(0);
-            setUserAnswer('');
+            setCurrentIndex(0);
+            setUserInput('');
             setShowAnswer(false);
             setScore({ correct: 0, total: 0 }); // Le total augmente à chaque réponse
+        } else if (quizType === 'until-perfect') {
+            setPendingCards(shuffled);
+            setCurrentIndex(0);
+            setUserInput('');
+            setShowAnswer(false);
+            setErrors([]);
+            setScore({ correct: 0, total: cards.length }); // Le total est fixe
         } else { // matching
             const fronts: MatchingItem[] = shuffled.map(c => ({ id: `front-${c.card_pk}`, text: c.front, image: c.image, type: 'front', cardId: c.card_pk }));
             const backs: MatchingItem[] = shuffled.map(c => ({ id: `back-${c.card_pk}`, text: c.back, type: 'back', cardId: c.card_pk }));
@@ -57,25 +66,67 @@ export const useQuiz = (cards: Card[], quizType: 'typing' | 'matching') => {
         }
     }, [cards, quizType]);
 
-    const currentCard = useMemo(() => quizCards[currentCardIndex], [quizCards, currentCardIndex]);
+    const currentCard = useMemo(() => {
+        if (quizType === 'until-perfect') return pendingCards[currentIndex];
+        return quizCards[currentIndex];
+    }, [quizType, pendingCards, quizCards, currentIndex]);
+
+    const options = useMemo(() => {
+        if (quizType !== 'multiple-choice' || !currentCard) return [];
+        const correct = currentCard.back;
+        let wrongs = quizCards
+            .filter(c => c.card_pk !== currentCard.card_pk && normalizeText(c.back) !== normalizeText(correct))
+            .map(c => c.back);
+        const uniqueWrongs = [...new Set(wrongs)];
+        const selectedWrongs = [];
+        for (let i = 0; i < 3 && uniqueWrongs.length > 0; i++) {
+            const idx = Math.floor(Math.random() * uniqueWrongs.length);
+            selectedWrongs.push(uniqueWrongs.splice(idx, 1)[0]);
+        }
+        const allOptions = [correct, ...selectedWrongs];
+        return allOptions.sort(() => Math.random() - 0.5);
+    }, [quizType, currentCard, quizCards]);
 
     // =================================================================
-    // Logique pour le Quiz "Typing"
+    // Logique pour les Quiz basés sur des cartes individuelles (typing, multiple-choice, until-perfect)
     // =================================================================
 
     const checkAnswer = () => {
-        if (!currentCard) return;
-        const isCorrect = normalizeText(userAnswer) === normalizeText(currentCard.back);
-        setScore(prev => ({ correct: prev.correct + (isCorrect ? 1 : 0), total: prev.total + 1 }));
+        if (!currentCard || quizType === 'matching') return;
+        const isCorrect = normalizeText(userInput) === normalizeText(currentCard.back);
+
+        if (quizType !== 'until-perfect') {
+            setScore(prev => ({ correct: prev.correct + (isCorrect ? 1 : 0), total: prev.total + 1 }));
+        } else if (isCorrect) {
+            setScore(prev => ({ ...prev, correct: prev.correct + 1 }));
+        }
+
         setShowAnswer(true);
 
         setTimeout(() => {
-            if (currentCardIndex < quizCards.length - 1) {
-                setCurrentCardIndex(prev => prev + 1);
-                setUserAnswer('');
+            let nextIndex = currentIndex + 1;
+            const currentListLength = quizType === 'until-perfect' ? pendingCards.length : quizCards.length;
+            const isEndOfRound = nextIndex >= currentListLength;
+
+            if (!isCorrect && quizType === 'until-perfect') {
+                setErrors(prev => [...prev, currentCard]);
+            }
+
+            if (!isEndOfRound) {
+                setCurrentIndex(nextIndex);
+                setUserInput('');
                 setShowAnswer(false);
             } else {
-                setIsComplete(true);
+                if (quizType === 'until-perfect' && errors.length > 0) {
+                    const newPending = [...errors].sort(() => Math.random() - 0.5);
+                    setPendingCards(newPending);
+                    setErrors([]);
+                    setCurrentIndex(0);
+                    setUserInput('');
+                    setShowAnswer(false);
+                } else {
+                    setIsComplete(true);
+                }
             }
         }, 2000);
     };
@@ -129,14 +180,16 @@ export const useQuiz = (cards: Card[], quizType: 'typing' | 'matching') => {
         // État général
         score,
         isComplete,
-        // Quiz Typing
+        // Quiz basés sur cartes individuelles
         currentCard,
-        userAnswer,
-        setUserAnswer,
+        userInput,
+        setUserInput,
         showAnswer,
         checkAnswer,
         quizCards,
-        currentCardIndex,
+        pendingCards,
+        currentIndex,
+        options,
         // Quiz Matching
         leftItems,
         rightItems,

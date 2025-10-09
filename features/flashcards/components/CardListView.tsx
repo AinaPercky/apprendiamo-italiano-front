@@ -3,7 +3,7 @@
 import React from 'react';
 import { useCards } from '../hooks/useCards';
 import type { Deck, Card } from '../../../types';
-import { ChevronsLeft, Edit, Link as LinkIcon, Plus, Trash2, Mic, Loader2 } from 'lucide-react';
+import { ChevronsLeft, Edit, Link as LinkIcon, Plus, Trash2, Mic, Loader2, CheckSquare, Repeat } from 'lucide-react';
 
 /**
  * @file Affiche la liste des cartes d'un deck sélectionné.
@@ -13,7 +13,7 @@ import { ChevronsLeft, Edit, Link as LinkIcon, Plus, Trash2, Mic, Loader2 } from
 interface CardListViewProps {
     deck: Deck;
     onReturnToDecks: () => void;
-    onStartQuiz: (type: 'typing' | 'matching') => void;
+    onStartQuiz: (type: 'typing' | 'matching' | 'multiple-choice' | 'until-perfect') => void;
     onCreateCard: () => void;
     onEditCard: (card: Card) => void;
 }
@@ -40,6 +40,8 @@ export const CardListView: React.FC<CardListViewProps> = ({ deck, onReturnToDeck
                 <div className="flex gap-2 flex-wrap">
                     <button onClick={() => onStartQuiz('typing')} className="bg-olive hover:bg-olive-dark text-white px-4 py-2 rounded-lg flex items-center gap-2" disabled={cards.length === 0}><Edit size={18} /> Quiz Frappe</button>
                     <button onClick={() => onStartQuiz('matching')} className="bg-olive-light hover:bg-olive text-white px-4 py-2 rounded-lg flex items-center gap-2" disabled={cards.length === 0}><LinkIcon size={18} /> Quiz Association</button>
+                    <button onClick={() => onStartQuiz('multiple-choice')} className="bg-olive-dark hover:bg-olive-light text-white px-4 py-2 rounded-lg flex items-center gap-2" disabled={cards.length === 0}><CheckSquare size={18} /> Quiz QCM</button>
+                    <button onClick={() => onStartQuiz('until-perfect')} className="bg-italian-green-light hover:bg-italian-green text-white px-4 py-2 rounded-lg flex items-center gap-2" disabled={cards.length === 0}><Repeat size={18} /> Quiz Jusqu'à 100%</button>
                     <button onClick={onCreateCard} className="bg-italian-green hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={18} /> Nouvelle Carte</button>
                 </div>
             </div>
