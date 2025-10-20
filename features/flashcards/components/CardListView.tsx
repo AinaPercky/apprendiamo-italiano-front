@@ -1,9 +1,10 @@
 // src/features/flashcards/components/CardListView.tsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCards } from '../hooks/useCards';
 import type { Deck, Card } from '../../../types';
-import { ChevronsLeft, Edit, Link as LinkIcon, Plus, Trash2, Mic, Loader2, CheckSquare, Repeat } from 'lucide-react';
+import { ChevronsLeft, Edit, Link as LinkIcon, Plus, Trash2, Mic, Loader2, CheckSquare, Repeat, Upload } from 'lucide-react';
+import { CardImport } from './CardImport';
 
 /**
  * @file Affiche la liste des cartes d'un deck sélectionné.
@@ -26,7 +27,15 @@ export const CardListView: React.FC<CardListViewProps> = ({ deck, onReturnToDeck
         searchTerm,
         setSearchTerm,
         deleteCard,
+        reloadCards,
     } = useCards(deck.deck_pk);
+
+    const [showImport, setShowImport] = useState(false);
+
+    const handleImportComplete = (successCount: number) => {
+        setShowImport(false);
+        reloadCards();
+    };
 
     return (
         <div className="space-y-6">
@@ -42,6 +51,7 @@ export const CardListView: React.FC<CardListViewProps> = ({ deck, onReturnToDeck
                     <button onClick={() => onStartQuiz('matching')} className="bg-olive-light hover:bg-olive text-white px-4 py-2 rounded-lg flex items-center gap-2" disabled={cards.length === 0}><LinkIcon size={18} /> Quiz Association</button>
                     <button onClick={() => onStartQuiz('multiple-choice')} className="bg-olive-dark hover:bg-olive-light text-white px-4 py-2 rounded-lg flex items-center gap-2" disabled={cards.length === 0}><CheckSquare size={18} /> Quiz QCM</button>
                     <button onClick={() => onStartQuiz('until-perfect')} className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200" disabled={cards.length === 0}><Repeat size={18} /> Quiz Jusqu'à 100%</button>
+                    <button onClick={() => setShowImport(true)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Upload size={18} /> Importer</button>
                     <button onClick={onCreateCard} className="bg-italian-green hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Plus size={18} /> Nouvelle Carte</button>
                 </div>
             </div>
@@ -81,6 +91,14 @@ export const CardListView: React.FC<CardListViewProps> = ({ deck, onReturnToDeck
                         </div>
                     ))}
                 </div>
+            )}
+
+            {showImport && (
+                <CardImport
+                    deckId={deck.deck_pk}
+                    onImportComplete={handleImportComplete}
+                    onClose={() => setShowImport(false)}
+                />
             )}
         </div>
     );
