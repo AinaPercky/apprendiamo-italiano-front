@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import FlashcardsApp from './components/FlashcardsApp';
 import AudioApp from './components/AudioApp';
-import { BookOpen, Mic } from 'lucide-react';
+import VerbsApp from './components/VerbsApp';
+import { BookOpen, Mic, Languages } from 'lucide-react';
 
-type AppView = 'flashcards' | 'audio';
+type AppView = 'flashcards' | 'audio' | 'verbs';
 
 const App: React.FC = () => {
   const [currentApp, setCurrentApp] = useState<AppView>('flashcards');
@@ -47,12 +48,21 @@ const App: React.FC = () => {
               <Mic size={18} />
               <span>Bibliothèque Audio</span>
             </NavButton>
+            <NavButton
+              onClick={() => setCurrentApp('verbs')}
+              isActive={currentApp === 'verbs'}
+            >
+              <Languages size={18} />
+              <span>Verbes</span>
+            </NavButton>
           </div>
         </nav>
       </header>
 
       <main>
-        {currentApp === 'flashcards' ? <FlashcardsApp /> : <AudioApp />}
+        {currentApp === 'flashcards' && <FlashcardsApp />}
+        {currentApp === 'audio' && <AudioApp />}
+        {currentApp === 'verbs' && <VerbsApp />}
       </main>
     </div>
   );
