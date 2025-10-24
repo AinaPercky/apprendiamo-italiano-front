@@ -24,11 +24,11 @@ export const AudioFilterBar: React.FC<AudioFilterBarProps> = ({ filters, onFilte
     };
 
     return (
-        <div className="bg-italian-white p-4 rounded-lg shadow-sm mb-8 border border-gray-200">
+        <div className="glass-card p-6 rounded-2xl shadow-lg mb-8 border-2 border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
                     <label htmlFor="search-audio" className="sr-only">Rechercher</label>
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-italian-green" />
                     <input
                         type="text"
                         id="search-audio"
@@ -36,7 +36,7 @@ export const AudioFilterBar: React.FC<AudioFilterBarProps> = ({ filters, onFilte
                         placeholder="Rechercher par titre ou texte..."
                         value={filters.searchTerm}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-olive focus:border-transparent"
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl transition-all duration-200 hover:border-italian-green/50 font-medium"
                     />
                 </div>
                 <div>
@@ -46,9 +46,9 @@ export const AudioFilterBar: React.FC<AudioFilterBarProps> = ({ filters, onFilte
                         name="category"
                         value={filters.category}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-olive focus:border-transparent bg-white"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl transition-all duration-200 hover:border-italian-green/50 bg-white font-medium cursor-pointer"
                     >
-                        <option value="all">Toutes les catégories</option>
+                        <option value="all">📚 Toutes les catégories</option>
                         {AUDIO_CATEGORIES.map(cat => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
                     </select>
                 </div>
@@ -59,9 +59,9 @@ export const AudioFilterBar: React.FC<AudioFilterBarProps> = ({ filters, onFilte
                         name="language"
                         value={filters.language}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-olive focus:border-transparent bg-white"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl transition-all duration-200 hover:border-italian-green/50 bg-white font-medium cursor-pointer"
                     >
-                        <option value="all">Toutes les langues</option>
+                        <option value="all">🌍 Toutes les langues</option>
                         {AUDIO_LANGUAGES.map(lang => <option key={lang.value} value={lang.value}>{lang.flag} {lang.label}</option>)}
                     </select>
                 </div>

@@ -51,82 +51,79 @@ export const AudioCard: React.FC<AudioCardProps> = ({ item, onEdit, onDelete }) 
 
     return (
         <>
-            <div className="bg-italian-white border border-gray-200 rounded-lg shadow-lg p-5 flex flex-col justify-between hover:shadow-xl transition-shadow mb-auto">
+            <div className="glass-card border-2 border-transparent rounded-2xl shadow-lg p-6 flex flex-col justify-between card-hover mb-auto hover:border-italian-green/30">
                 <audio id={`audio-player-${item.id}`} src={`${AUDIO_API_BASE}${item.audio_url}`} preload="auto"></audio>
                 <div>
-                    <div className="flex justify-between items-start">
-                        <span className="text-sm bg-olive/10 text-olive-dark font-semibold px-2 py-1 rounded-full">
+                    <div className="flex justify-between items-start mb-3">
+                        <span className="text-sm bg-gradient-to-r from-olive to-olive-light text-white font-semibold px-3 py-1.5 rounded-full shadow-sm">
                             {categoryLabel}
                         </span>
-                        <span className="text-lg">{languageFlag}</span>
+                        <span className="text-2xl">{languageFlag}</span>
                     </div>
 
-                    <h3 className="text-xl font-semibold font-serif my-2 text-charcoal">{item.title}</h3>
-                    <p className="text-gray-600 text-sm mb-3 italic">"{item.text}"</p>
+                    <h3 className="text-2xl font-bold font-serif my-3 text-charcoal">{item.title}</h3>
+                    <div className="bg-italian-green/5 border-l-4 border-italian-green rounded-r-xl p-3 mb-3">
+                        <p className="text-gray-700 text-base italic">"{item.text}"</p>
+                    </div>
 
                     {item.ipa && (
-                        <p className="text-indigo-700 bg-indigo-100 rounded-md px-2 py-1 text-sm font-mono">
-                            IPA: {item.ipa}
-                        </p>
+                        <div className="bg-gradient-to-r from-olive/10 to-olive-light/10 border border-olive/30 rounded-xl px-3 py-2 text-sm font-mono">
+                            <span className="text-olive-dark font-semibold">IPA:</span> <span className="text-olive">{item.ipa}</span>
+                        </div>
                     )}
 
-                    {/* Bouton pour ouvrir la vue karaoké */}
                     <button
                         onClick={() => setShowKaraoke(true)}
-                        className="mt-3 text-sm text-olive-dark underline hover:text-olive"
+                        className="mt-4 text-sm bg-italian-green/10 text-italian-green font-semibold px-4 py-2 rounded-full hover:bg-italian-green hover:text-white transition-all duration-200"
                     >
-                        Voir en mode karaoké
+                        🎤 Mode karaoké
                     </button>
                 </div>
 
-                {/* Contrôles audio */}
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between mt-5 pt-5 border-t-2 border-gray-200">
                     <div className="flex items-center gap-2">
-                        {/* Lecture / Pause */}
                         <button
                             onClick={() => playAudio(item.id)}
-                            className="text-italian-green hover:text-green-800 p-2 rounded-full hover:bg-green-100"
+                            className="text-white bg-italian-green hover:bg-green-700 p-3 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                             title={playingAudioId === item.id ? 'Pause' : 'Lire'}
                         >
                             {playingAudioId === item.id ? <Pause size={24} /> : <Play size={24} />}
                         </button>
 
-                        {/* Boucle */}
                         <button
                             onClick={() => toggleLoop(item.id)}
                             title="Lire en boucle"
-                            className={`p-2 rounded-full transition-colors ${
+                            className={`p-3 rounded-full transition-all ${
                                 loopingAudioId === item.id
-                                    ? 'text-italian-green bg-green-100'
+                                    ? 'text-white bg-italian-green shadow-md scale-105'
                                     : 'text-gray-500 hover:text-charcoal hover:bg-gray-100'
                             }`}
                         >
-                            <Repeat size={18} />
+                            <Repeat size={20} />
                         </button>
 
-                        {/* Vitesse */}
                         <div className="relative">
                             <button
                                 onClick={() => setShowSpeedMenu(!showSpeedMenu)}
                                 title="Vitesse de lecture"
-                                className={`p-2 rounded-full transition-colors ${
+                                className={`p-3 rounded-full transition-all ${
                                     showSpeedMenu
-                                        ? 'bg-olive/10 text-olive-dark'
+                                        ? 'bg-olive/20 text-olive-dark'
                                         : 'text-gray-500 hover:text-charcoal hover:bg-gray-100'
                                 }`}
                             >
-                                <Gauge size={18} />
+                                <Gauge size={20} />
                             </button>
 
                             {showSpeedMenu && (
-                                <div className="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[80px] z-10">
+                                <div className="absolute bottom-full left-0 mb-2 bg-white border-2 border-gray-200 rounded-2xl shadow-2xl py-2 min-w-[90px] z-10">
                                     {SPEED_OPTIONS.map(option => (
                                         <button
                                             key={option.value}
                                             onClick={() => handleSpeedChange(option.value)}
-                                            className={`w-full text-left px-3 py-1.5 text-sm hover:bg-olive/10 transition-colors ${
+                                            className={`w-full text-left px-4 py-2 text-sm hover:bg-olive/10 transition-colors ${
                                                 playbackSpeed === option.value
-                                                    ? 'bg-olive/20 font-semibold text-olive-dark'
+                                                    ? 'bg-olive/20 font-bold text-olive-dark'
                                                     : 'text-gray-700'
                                             }`}
                                         >
@@ -138,25 +135,23 @@ export const AudioCard: React.FC<AudioCardProps> = ({ item, onEdit, onDelete }) 
                         </div>
                     </div>
 
-                    {/* Actions éditer / supprimer */}
                     <div className="flex gap-2">
                         <button
                             onClick={() => onEdit(item)}
-                            className="text-olive hover:text-olive-dark p-2 rounded-full hover:bg-olive/10"
+                            className="text-olive hover:text-olive-dark p-2 rounded-full hover:bg-olive/10 transition-all"
                         >
-                            <Edit size={18} />
+                            <Edit size={20} />
                         </button>
                         <button
                             onClick={() => onDelete(item.id)}
-                            className="text-terracotta hover:text-terracotta-dark p-2 rounded-full hover:bg-red-100"
+                            className="text-terracotta hover:text-terracotta-dark p-2 rounded-full hover:bg-red-100 transition-all"
                         >
-                            <Trash2 size={18} />
+                            <Trash2 size={20} />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Vue karaoké modale */}
             {showKaraoke && (
                 <AudioKaraokeView
                     item={item}

@@ -13,27 +13,29 @@ const VerbsApp: React.FC = () => {
   const inactiveClasses = "text-charcoal hover:bg-italian-green/10";
 
   return (
-    <div className="min-h-screen bg-off-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-4 animate-slide-in">
           <div>
-            <h1 className="text-3xl font-bold text-charcoal font-serif">Conjugaisons italiennes</h1>
-            <p className="mt-2 text-gray-600">Apprenez et testez vos connaissances des verbes italiens</p>
+            <h1 className="text-4xl font-bold text-charcoal font-serif mb-2 flex items-center gap-3">
+              ✏️ Conjugaisons Italiennes
+            </h1>
+            <p className="mt-2 text-gray-600 text-lg">Maîtrisez les verbes italiens avec notre outil intelligent</p>
           </div>
-          <nav className="flex gap-2 p-1 bg-white rounded-lg shadow-sm border border-gray-200">
+          <nav className="flex gap-2 p-1.5 glass-card rounded-2xl shadow-lg border-2 border-gray-200">
             <button
               onClick={() => setCurrentView('learn')}
               className={`${navItemClasses} ${currentView === 'learn' ? activeClasses : inactiveClasses}`}
             >
-              <BookOpen size={18} />
-              <span className="font-semibold text-sm">Apprendre</span>
+              <BookOpen size={20} />
+              <span className="font-bold text-sm">Apprendre</span>
             </button>
             <button
               onClick={() => setCurrentView('quiz')}
               className={`${navItemClasses} ${currentView === 'quiz' ? activeClasses : inactiveClasses}`}
             >
-              <HelpCircle size={18} />
-              <span className="font-semibold text-sm">Quiz</span>
+              <HelpCircle size={20} />
+              <span className="font-bold text-sm">Quiz</span>
             </button>
           </nav>
         </div>

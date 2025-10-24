@@ -11,24 +11,24 @@ interface AccordionProps {
 
 const Accordion: React.FC<AccordionProps> = ({ mood, isOpen, onToggle }) => {
     return (
-        <div className="border border-gray-200 rounded-lg overflow-hidden mb-4 bg-white">
+        <div className="border-2 border-gray-200 rounded-2xl overflow-hidden mb-4 glass-card shadow-lg card-hover">
             <button
                 onClick={onToggle}
-                className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="w-full flex justify-between items-center p-5 bg-gradient-to-r from-italian-green/5 to-olive/5 hover:from-italian-green/10 hover:to-olive/10 transition-all duration-200"
             >
-                <h3 className="text-xl font-semibold text-green-700">{mood.mood}</h3>
-                <ChevronDownIcon className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`} />
+                <h3 className="text-2xl font-bold text-italian-green">{mood.mood}</h3>
+                <ChevronDownIcon className={`w-7 h-7 text-italian-green transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`} />
             </button>
             {isOpen && (
-                <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
                     {mood.tenses.map(tense => (
-                        <div key={tense.tense} className="border border-gray-200 rounded-md p-4">
-                            <h4 className="font-bold text-gray-800 mb-3 text-center border-b pb-2">{tense.tense}</h4>
-                            <ul className="space-y-1 text-gray-600">
+                        <div key={tense.tense} className="border-2 border-olive/30 rounded-xl p-5 bg-gradient-to-br from-white to-olive/5 hover:shadow-md transition-shadow">
+                            <h4 className="font-bold text-olive-dark mb-4 text-center pb-2 border-b-2 border-olive/20 text-lg">{tense.tense}</h4>
+                            <ul className="space-y-2 text-gray-700">
                                 {tense.conjugations.map(c => (
-                                    <li key={c.person} className="flex justify-between">
-                                        <span className="font-medium">{c.person}</span>
-                                        <span>{c.verb}</span>
+                                    <li key={c.person} className="flex justify-between items-center py-1">
+                                        <span className="font-semibold text-charcoal">{c.person}</span>
+                                        <span className="text-italian-green font-medium">{c.verb}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -52,13 +52,13 @@ export const ConjugationTable: React.FC<ConjugationTableProps> = ({ data }) => {
     };
 
     return (
-        <div className="w-full">
-            <div className="text-center mb-8">
-                <div className="flex justify-center items-center h-20 w-20 mx-auto mb-4 bg-green-100 rounded-full text-green-600">
-                    <VerbIcon iconSuggestion={data.icon_suggestion} className="w-12 h-12" />
+        <div className="w-full animate-fade-in">
+            <div className="text-center mb-10 glass-card p-8 rounded-3xl shadow-xl border-2 border-italian-green/20">
+                <div className="flex justify-center items-center h-24 w-24 mx-auto mb-5 bg-gradient-to-br from-italian-green to-olive rounded-full text-white shadow-lg">
+                    <VerbIcon iconSuggestion={data.icon_suggestion} className="w-14 h-14" />
                 </div>
-                <h2 className="text-4xl font-bold text-gray-800 capitalize">{data.verb}</h2>
-                <p className="text-lg italic text-gray-500 mt-1">({data.translation})</p>
+                <h2 className="text-5xl font-bold text-charcoal capitalize mb-2">{data.verb}</h2>
+                <p className="text-xl italic text-gray-600 mt-2">({data.translation})</p>
             </div>
             {data.conjugations.map(mood => (
                 <Accordion

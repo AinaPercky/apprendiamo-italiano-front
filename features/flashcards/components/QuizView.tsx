@@ -46,13 +46,17 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
     if (isComplete) {
         const finalScore = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
         return (
-            <div className="max-w-md mx-auto bg-italian-white rounded-lg shadow-lg p-8 text-center">
-                <h2 className="text-2xl font-bold font-serif text-charcoal mb-6">Quiz Terminé !</h2>
-                <div className="text-4xl font-bold text-italian-green mb-4">{score.correct}/{score.total}</div>
-                <p className="text-lg text-gray-600 mb-6">Score: {finalScore}%</p>
+            <div className="max-w-md mx-auto glass-card rounded-3xl shadow-2xl p-10 text-center border-2 border-italian-green/30 animate-fade-in">
+                <div className="text-6xl mb-4">🎉</div>
+                <h2 className="text-3xl font-bold font-serif text-charcoal mb-6">Bravo ! Quiz Terminé !</h2>
+                <div className="text-6xl font-bold text-italian-green mb-4">{score.correct}/{score.total}</div>
+                <div className="progress-bar mb-4">
+                    <div className="progress-fill" style={{ width: `${finalScore}%` }}></div>
+                </div>
+                <p className="text-2xl text-gray-700 mb-8 font-semibold">Score: {finalScore}%</p>
                 <div className="flex gap-4 justify-center">
-                    <button onClick={() => window.location.reload()} className="bg-olive hover:bg-olive-dark text-white px-6 py-2 rounded-lg flex items-center gap-2"><RefreshCw size={18} /> Recommencer</button>
-                    <button onClick={onReturnToCards} className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg">Retour</button>
+                    <button onClick={() => window.location.reload()} className="btn-primary text-white px-8 py-3 rounded-full flex items-center gap-2 shine-effect"><RefreshCw size={20} /> Recommencer</button>
+                    <button onClick={onReturnToCards} className="bg-gray-400 hover:bg-gray-500 text-white px-8 py-3 rounded-full transition-all hover:shadow-lg">Retour</button>
                 </div>
             </div>
         );
@@ -66,13 +70,13 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
 
     if (quizType === 'matching') {
         return (
-            <div className="max-w-4xl mx-auto space-y-6">
-                <div className="flex justify-between items-center bg-green-100/50 p-2 rounded-t-lg border-b-2 border-italian-green">
-                    <button onClick={onReturnToCards} className="text-olive hover:text-olive-dark"><ArrowLeft size={20} /></button>
-                    <h2 className="text-2xl font-bold font-serif text-charcoal">Quiz d'Association</h2>
-                    <div className="text-lg font-semibold text-italian-green">Score: {score.correct}/{score.total}</div>
+            <div className="max-w-4xl mx-auto space-y-6 animate-slide-in">
+                <div className="flex justify-between items-center glass-card p-5 rounded-2xl border-2 border-italian-green/20 shadow-lg">
+                    <button onClick={onReturnToCards} className="text-olive hover:text-olive-dark p-2 rounded-full hover:bg-olive/10 transition-all"><ArrowLeft size={24} /></button>
+                    <h2 className="text-3xl font-bold font-serif text-charcoal">🎯 Quiz d'Association</h2>
+                    <div className="badge-italian text-lg">Score: {score.correct}/{score.total}</div>
                 </div>
-                <div className="bg-italian-white rounded-lg shadow-lg p-6 rounded-b-lg">
+                <div className="glass-card rounded-2xl shadow-xl p-8 border-2 border-gray-200">
                     <p className="text-center text-gray-600 mb-6">Associez les termes français à leurs traductions italiennes.</p>
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-4">
@@ -109,38 +113,38 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
         : `${currentIndex + 1} / ${quizType === 'until-perfect' ? pendingCards.length : quizCards.length}`;
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <div className="flex justify-between items-center">
-                <button onClick={onReturnToCards} className="text-olive hover:text-olive-dark"><ArrowLeft size={20} /></button>
-                <div className="text-lg font-semibold text-gray-700">{progressLabel}</div>
-                <div className="text-lg font-semibold text-italian-green">Score: {score.correct}/{score.total}</div>
+        <div className="max-w-2xl mx-auto space-y-6 animate-slide-in">
+            <div className="flex justify-between items-center glass-card p-4 rounded-2xl shadow-lg border-2 border-gray-200">
+                <button onClick={onReturnToCards} className="text-olive hover:text-olive-dark p-2 rounded-full hover:bg-olive/10 transition-all"><ArrowLeft size={24} /></button>
+                <div className="text-lg font-semibold text-charcoal">{progressLabel}</div>
+                <div className="badge-italian text-base">Score: {score.correct}/{score.total}</div>
             </div>
-            <div className="bg-italian-white rounded-lg shadow-lg p-8">
+            <div className="glass-card rounded-2xl shadow-xl p-10 border-2 border-transparent hover:border-italian-green/20 transition-all">
                 {currentCard.image && <div className="mb-6 flex justify-center"><img src={currentCard.image} alt="Card" className="max-w-full max-h-80 object-contain rounded-lg bg-gray-50 p-4" /></div>}
-                <div className="text-center mb-6">
-                    <h2 className="text-3xl font-bold font-serif text-charcoal mb-2">{currentCard.front}</h2>
-                    {currentCard.pronunciation && <p className="text-olive">{currentCard.pronunciation}</p>}
+                <div className="text-center mb-8">
+                    <h2 className="text-4xl font-bold font-serif text-charcoal mb-3">{currentCard.front}</h2>
+                    {currentCard.pronunciation && <p className="text-olive text-lg bg-olive/10 px-4 py-2 rounded-full inline-block">{currentCard.pronunciation}</p>}
                 </div>
                 <div className="space-y-4">
                     {isTypingOrUntil ? (
                         <div className="flex flex-col items-center">
-                            <input 
-                                type="text" 
-                                value={userInput} 
-                                onChange={(e) => setUserInput(e.target.value)} 
-                                placeholder="Votre réponse en italien..." 
-                                className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg text-center text-lg focus:ring-2 focus:ring-olive focus:border-transparent" 
-                                onKeyPress={(e) => e.key === 'Enter' && !showAnswer && checkAnswer()} 
-                                disabled={showAnswer} 
+                            <input
+                                type="text"
+                                value={userInput}
+                                onChange={(e) => setUserInput(e.target.value)}
+                                placeholder="Votre réponse en italien..."
+                                className="w-full max-w-md px-6 py-4 border-2 border-gray-300 rounded-2xl text-center text-xl font-medium transition-all duration-200 hover:border-italian-green/50"
+                                onKeyPress={(e) => e.key === 'Enter' && !showAnswer && checkAnswer()}
+                                disabled={showAnswer}
                             />
                         </div>
                     ) : isMultipleChoice ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {options.map((opt, idx) => (
-                                <button 
-                                    key={idx} 
-                                    onClick={() => !showAnswer && setUserInput(opt)} 
-                                    className={`p-4 rounded-lg border-2 text-center transition-all cursor-pointer ${userInput === opt ? 'bg-olive/20 border-olive text-charcoal' : 'border-gray-300 text-charcoal'} ${showAnswer ? (normalizeText(opt) === normalizeText(currentCard.back) ? 'bg-green-100 border-italian-green text-green-800' : (userInput === opt ? 'bg-red-100 border-terracotta text-red-800' : '')) : 'hover:bg-gray-50'}`} 
+                                <button
+                                    key={idx}
+                                    onClick={() => !showAnswer && setUserInput(opt)}
+                                    className={`p-5 rounded-2xl border-2 text-center transition-all cursor-pointer font-semibold text-lg ${userInput === opt ? 'bg-olive/20 border-olive text-charcoal shadow-md' : 'border-gray-300 text-charcoal'} ${showAnswer ? (normalizeText(opt) === normalizeText(currentCard.back) ? 'bg-green-100 border-italian-green text-green-800 shadow-lg' : (userInput === opt ? 'bg-red-100 border-terracotta text-red-800' : '')) : 'hover:bg-gray-50 hover:shadow-md'}`}
                                     disabled={showAnswer}
                                 >
                                     {opt}
@@ -165,7 +169,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ deck, quizType, onReturnToCa
                         </div>
                     ) : (
                         <div className="text-center">
-                            <button onClick={checkAnswer} className="bg-italian-green hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg" disabled={!userInput.trim()}>Vérifier</button>
+                            <button onClick={checkAnswer} className="btn-primary text-white px-10 py-4 rounded-full text-xl shine-effect shadow-xl hover:scale-105 transition-transform" disabled={!userInput.trim()}>Vérifier</button>
                         </div>
                     )}
                 </div>

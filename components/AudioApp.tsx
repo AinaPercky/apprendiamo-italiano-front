@@ -43,7 +43,7 @@ const AudioApp: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-10">
             {isModalOpen && (
                 <AudioFormModal
                     isOpen={isModalOpen}
@@ -53,13 +53,18 @@ const AudioApp: React.FC = () => {
                 />
             )}
 
-            <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-                <h1 className="text-3xl font-bold font-serif text-charcoal">Bibliothèque Audio</h1>
+            <div className="flex justify-between items-center mb-8 flex-wrap gap-4 animate-slide-in">
+                <div>
+                    <h1 className="text-4xl font-bold font-serif text-charcoal mb-2 flex items-center gap-3">
+                        🎵 Bibliothèque Audio
+                    </h1>
+                    <p className="text-gray-600">Écoutez, apprenez et pratiquez votre prononciation</p>
+                </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="bg-italian-green hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+                    className="btn-primary text-white font-bold py-3 px-6 rounded-full flex items-center gap-2 shine-effect"
                 >
-                    <Plus size={18} /> Créer un Audio
+                    <Plus size={20} /> Créer un Audio
                 </button>
             </div>
 
